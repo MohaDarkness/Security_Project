@@ -7,47 +7,61 @@
         <!-- <script src="http://www.leemon.com/crypto/BigInt.js"></script> -->
         <script src="./node_modules/mathjs/lib/browser/math.js"></script>
         <script src="myscript.js"></script>
-        <title>Security Project</title>
+        <title>RSA</title>
         <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+          <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+          <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     </head>
-    <style>
-
-    </style>
+  
 
     <body>
-    <div class = "instructions form" style="background-color: black;"> 
-        <p><strong>How to pick p:</strong><br> p must be a prime number.</p>
-        <p><strong>How to pick q:</strong><br> q must be a prime number.</p>
+    <!--<div class = "instructions form" style="background-color: black;"> -->
+    <!--    <p><strong>How to pick p:</strong><br> p must be a prime number.</p>-->
+    <!--    <p><strong>How to pick q:</strong><br> q must be a prime number.</p>-->
         
 
-    </div>
+    <!--</div>-->
     <div class="form">
-        <div class="title">Welcome</div>
-        <div class="subtitle">Enter correct value so we can generate RSA keys and encrypt the message you want.</div>
+        <div class="title" style="
+    align-self: center;
+    text-align: center;
+">RSA</div>
+        <div class="subtitle" style="
+    align-self: center;
+    text-align: center;
+">Enter correct values are required to enter the next value</div>
         <div class="input-container ic1">
-            <input id="pValue" class="input" type="text" placeholder=" " />
-            <button id=check1 onclick=check1()>check</button>
-            <!-- <div class="cut"></div> -->
-            <label for="firstname" class="placeholder">p (Must be a prime number)</label>
+            <div style="display: flex;  height: 95%;">
+                 <input id="pValue" class="input" type="text" placeholder=" p (Must be a prime number)" />
+                    
+                 <button id=check1 onclick=check1() class="btn btn-danger">Check</button>
+            </div>
+             <!--<div class="cut"></div> -->
+            <!--<label for="firstname" class="placeholder">p (Must be a prime number)</label>-->
         </div>
         <div class="input-container ic2">
-            <input id="qValue" class="input" type="text" placeholder=" " readonly/>
-            <button id=check2 onclick='check2()'>check</button>
-            <!-- <div class="cut"></div> -->
-            <label for="lastname" class="placeholder">q (Must be a prime number)</label>
+            <div style="display: flex;  height: 95%;">
+                 <input id="qValue" class="input" type="text" placeholder=" q (Must be a prime number)" readonly/>
+                 <button id=check2 onclick='check2()' class="btn btn-danger">Check</button>
+            </div>
+             <!--<div class="cut"></div> -->
+            <!--<label for="lastname" class="placeholder">q (Must be a prime number)</label>-->
         </div>
         <div class="input-container ic2">
-            <input id="eValue" class="input" type="text" placeholder=" " readonly/>
-            <button id=check2 onclick='check3()'>check</button>
+            <div style="display: flex;  height: 95%;">
+                  <input id="eValue" class="input" type="text" placeholder="e (Must be coprime to phi) " readonly/>
+                  <button id=check2 onclick='check3()' class="btn btn-danger">Check</button>
+            </div>
+             <!--<div class="cut cut-short"></div>-->
+            <!--<label for="email" class="placeholder">e (Must be coprime to n)</label>-->
+        </div>
+        <div class="input-container ic2">
+            <input id="plaintext" class="input" type="text" placeholder="A message to be encrypted.. " readonly/>
             <!-- <div class="cut cut-short"></div> -->
-            <label for="email" class="placeholder">e (Must be coprime to n)</>
+            <!--<label for="plaintext" class="placeholder">Message want to be encrypted...</label>-->
         </div>
-        <div class="input-container ic2">
-            <input id="plaintext" class="input" type="text" placeholder=" " readonly/>
-            <!-- <div class="cut cut-short"></div> -->
-            <label for="plaintext" class="placeholder">Message want to be encrypted..</>
-        </div>
-        <button id="submit" type="text" class="submit" onclick="takePlain()">Next</button>
+        <button id="submit" type="text" class="submit" onclick="takePlain()">Calculate</button>
     </div>
     </body>
 

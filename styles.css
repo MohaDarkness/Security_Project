@@ -1,11 +1,35 @@
 body {
+    
   justify-content: center;
     align-items: center;
-    background-color: #000;
+    background-color: #000 !important;
     display: flex;
     height: 100vh;
   }
   
+  .tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
   .instructions{
     /* padding-right:50px; */
     color:white;
@@ -16,10 +40,10 @@ body {
     background-color: #15172b;
     border-radius: 20px;
     box-sizing: border-box;
-    height: 570px;
+    height: 90%;
     padding: 20px;
     margin:50px;
-    width: 320px;
+    width: 40%;
   }
   
   .title {
@@ -49,7 +73,7 @@ body {
   }
   
   .ic2 {
-    margin-top: 30px;
+    margin-top: 5%;
   }
   
   .input {
@@ -63,6 +87,7 @@ body {
     outline: 0;
     padding: 4px 20px 0;
     width: 100%;
+    margin-bottom:15px;
   }
   
   .cut {
