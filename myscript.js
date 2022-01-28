@@ -1,13 +1,66 @@
 var p, q, e, n, phi, d;
 
+function isPrime(num) {
+    for (let i = 2, s = num; i * i <= s; i++)
+        if (num % BigInt(i) === 0) return false;
+
+    return num > 1;
+}
+
+function egcd(a, b) {
+    var Phi = b;
+    if (a < b) [a, b] = [b, a];
+    let s = BigInt(0), old_s = BigInt(1);
+    let t = BigInt(1), old_t = BigInt(0);
+    let r = b, old_r = a;
+    while (r != 0) {
+        let q = old_r / r;
+        [r, old_r] = [old_r - q * r, r];
+        [s, old_s] = [old_s - q * s, s];
+        [t, old_t] = [old_t - q * t, t];
+    }
+
+    if (old_t < BigInt(0)) {
+        while (old_t < BigInt(0)) {
+            old_t += Phi;
+        }
+    }
+    return ([old_r, old_t]); // [GCD, Inv]
+}
+
+function powerMod(x, y, p) {
+    // Initialize result
+    let res = BigInt(1);
+
+    // Update x if it is more
+    // than or equal to p
+    x = x % p;
+
+    if (x == 0)
+        return 0;
+
+    while (y > 0) {
+        // If y is odd, multiply
+        // x with result
+        if (y & BigInt(1))
+            res = res * x % p;
+
+        // y must be even now
+
+        // y = $y/2
+        y = y / BigInt(2);
+        x = x * x % p;
+    }
+    return res;
+}
 
 
 function check1() {
     p = document.getElementById("pValue").value;
     console.log(p);
-    p = math.bignumber(p);
-    if (p < 99999999999999999999) {
-        if (math.isPrime(p)) {
+    p = BigInt(p);
+    if (p < 99999999999999) {
+        if (isPrime(p)) {
             console.log(p);
             document.getElementById("qValue").removeAttribute("readonly");
             console.log("now you can use the second!");
@@ -25,10 +78,10 @@ function check1() {
 
 function check2() {
     q = document.getElementById("qValue").value;
-    q = math.bignumber(q);
+    q = BigInt(q);
 
-    if (q < 99999999999999999999) {
-        if (math.isPrime(q)) {
+    if (q < 99999999999999) {
+        if (isPrime(q)) {
             calculateValues();
             document.getElementById("eValue").removeAttribute("readonly");
             console.log("now you can use the third!");
@@ -47,22 +100,20 @@ function check2() {
 function calculateValues() {
     n = p * q;
     if (p == q)
-        phi = (p - 1) * q;
+        phi = (p - BigInt(1)) * q;
     else
-        phi = (p - 1) * (q - 1);
+        phi = (p - BigInt(1)) * (q - BigInt(1));
 
-    n = math.bignumber(n);
-    phi = math.bignumber(phi);
-    console.log("This is p:", p * 1);
-    console.log("This is q:", q * 1);
-    console.log("This is n:", n * 1);
-    console.log("This is phi:", phi * 1);
+    console.log("This is p:", p);
+    console.log("This is q:", q);
+    console.log("This is n:", n);
+    console.log("This is phi:", phi);
 }
 
 function check3() {
     e = document.getElementById("eValue").value;
-    e = math.bignumber(e);
-    if (math.gcd(e, phi) == 1 && e * 1 > 1 && e * 1 < phi) {
+    e = BigInt(e);
+    if (egcd(e, phi)[0] == 1 && e * BigInt(1) > 1 && e * BigInt(1) < phi) {
         console.log(e);
         document.getElementById("plaintext").removeAttribute("readonly");
         calculateD(e, phi);
@@ -75,15 +126,8 @@ function check3() {
 
 function calculateD(E, Phi) {
     console.log("This is E and Phi before the algo: ", E, Phi);
-    var a, b, c;
-    [a, b, c] = math.xgcd(e, phi);
-    d = b["value"];
-    if (d < 0) {
-        while (d < 0) {
-            d = math.add(d, phi);
-        }
-    }
-    console.log("This is d: ", d * 1);
+    d = egcd(e, phi)[1];
+    console.log("This is d: ", d);
 }
 
 var Plain, plainSplit, Cipher, cipherSplit, plainAgain, plainAgainSplit, protocolList = [];
@@ -99,18 +143,25 @@ function takePlain() {
 
     }
     console.log("Plaintext converted to ascii array: ", plainSplit);
-
+    console.log("IN PROTOCOL!!");
     protocol();
 }
 var protocolNum;
 function protocol() {
-    var nTmp = n * 1, len = 3, counter = 1;
+
+    var nTmp = n, len = 3, counter = 1;
     nTmp = '' + nTmp;
 
     if (nTmp.length > len) {
-        while (len * (counter + 1) <= nTmp.length)
+        var m = n;
+        counter = 0;
+        while (m > 1) {
             counter++;
+            m = m / BigInt(10);
+        }
+        counter = Math.floor(counter / 3);
     }
+
     protocolNum = counter;
     console.log("This is protocolNum: ", protocolNum);
 
@@ -141,7 +192,7 @@ function prepare() {
     }
     console.log("Plaintext converted to ascii blocks: ", plainSplit, typeof plainSplit[0]);
 
-    if (n * 1 < 127)
+    if (n < 127)
         protocolList1();
     else {
         for (var i = 0; i < Plain.length; i++)
@@ -154,50 +205,20 @@ function prepare() {
 function protocolList1() {
     for (var i = 0; i < plainSplit.length; i++) {
         var div;
-        div = math.divide(parseInt(plainSplit[i]), n);
-        // div += 1;
-        protocolList.push(math.floor(div) * 1);
+        div = BigInt(plainSplit[i]) / n;
+        protocolList.push(div);
     }
     console.log("This is protocolList: ", protocolList);
 };
 
-function powerMod(x, y, p) {
-    // Initialize result
-    let res = 1;
-    res = math.bignumber(res);
-
-    // Update x if it is more
-    // than or equal to p
-    x = math.mod(x, p);
-
-    if (x == 0)
-        return 0;
-
-    while (y > 0) {
-        // If y is odd, multiply
-        // x with result
-        if (y & 1)
-            res = math.mod(math.multiply(res, x), p);
-
-        // y must be even now
-
-        // y = $y/2
-        y = math.divide(y, 2);
-        x = math.mod(math.multiply(x, x), p);
-    }
-    return res;
-}
-
 function lowLevelEncryption() {
     var tmpNum;
     cipherSplit = [];
-    // console.log("This is n, n*1:", n, n * 1);
     for (var i = 0; i < plainSplit.length; i++) {
-        tmpNum = math.bignumber(plainSplit[i]);
+        tmpNum = BigInt(plainSplit[i]);
         tmpNum = powerMod(tmpNum, e, n);
         cipherSplit.push('' + tmpNum);
     }
-    // console.log("This is cipherSplit: ", cipherSplit);
 
     highLevelEncryption();
 }
@@ -234,29 +255,32 @@ function highLevelEncryption() {
 
 
 function lowLevelDecrypt() {
+    console.log("This is cipherSplit in lowleveldec:", cipherSplit);
     plainAgainSplit = [];
     tmpCipherSplit = cipherSplit;
     var tmp = 0;
     console.log(cipherSplit);
     for (var i = 0; i < tmpCipherSplit.length; i++) {
-        tmp = math.bignumber(tmpCipherSplit[i]);
-        // console.log("This is tmp before pow:",tmp*1);
-        // tmp = math.pow(tmp, d);
-        // console.log("This is tmp before mod:",tmp*1);
-        // tmp = math.mod(tmp, n);
-        // console.log("This is tmp before push:",tmp*1);
-        // plainAgainSplit.push(''+tmp);
+        tmp = BigInt(tmpCipherSplit[i]);
         tmp = powerMod(tmp, d, n);
-        console.log("This is tmp:", tmp);
         plainAgainSplit.push('' + tmp);
     }
+
+    console.log(n);
     for (var i = 0; i < plainAgainSplit.length; i++) {
-        var st = '';
-        for (var j = 0; j < protocolNum * 3 - plainAgainSplit[i].length; j++)
+        var st = '', counter = 0, tmpNum = BigInt(plainAgainSplit[i]);
+
+        while (tmpNum >= 1) {
+            counter++;
+            tmpNum = tmpNum / BigInt(10);
+        }
+
+        for (var j = 0; j < protocolNum * 3 - counter; j++)
             st += '0';
 
         plainAgainSplit[i] = st + plainAgainSplit[i];
     }
+    console.log("This is plainAgainSplit before high-level: ", plainAgainSplit)
     highLevelDecryption()
 }
 
@@ -268,59 +292,34 @@ function highLevelDecryption() {
             var newNum = tmpSplit[i][0];
             for (j = 1; j < protocolNum * 3; j++) {
                 if (j % 3 == 0) {
-                    plainAgainSplit.push(newNum);
+                    if (newNum != '000')
+                        plainAgainSplit.push(newNum);
                     newNum = tmpSplit[i][j];
                 }
                 else {
                     newNum += tmpSplit[i][j];
                 }
             }
-            plainAgainSplit.push(newNum);
+            if (newNum != '000')
+                plainAgainSplit.push(newNum);
         }
     }
 
-    // console.log(plainAgainSplit);
+    console.log(plainAgainSplit);
     plainAgain = '';
     var fromProtocolList;
     for (var i = 0; i < plainAgainSplit.length; i++) {
-        fromProtocolList = protocolList[i] * n;
-        console.log("this is from protocolList: ", fromProtocolList);
-        // alert(typeof fromProtocolList);
-        // alert( fromProtocolList);
-        fromProtocolList += parseInt(plainAgainSplit[i]);
-        // alert(fromProtocolList);
-        // plainAgain += String.fromCharCode(parseInt(plainAgainSplit[i]));
-        plainAgain += String.fromCharCode(fromProtocolList);
+        if (plainAgainSplit[i] == '000') {
+            console.log("got you!! :D", i);
+            continue;
+        }
+        fromProtocolList = BigInt(protocolList[i]) * n;
+        fromProtocolList += BigInt(plainAgainSplit[i]);
+        if (fromProtocolList != 0)
+            plainAgain += String.fromCharCode(Number(fromProtocolList));
     }
-    console.log("This is protocolList:", protocolList)
-    console.log("This is plainSplit:", plainSplit)
-    console.log("This is cipherSplit:", cipherSplit)
-    console.log("This is plainAgainSplit:", plainAgainSplit);
-    console.log("This is the plain Again:", plainAgain);
-    alert("n: " + (n * 1) + "\np: " + (p * 1) + "\nq: " + (q * 1) + "\nphi: " + (1 * phi) + "\ne: " + (e * 1) + "\nPublic Key: (" + (e * 1) + "," + (n * 1) + ")\nPrivate Key: (" + (d * 1) + "," + (1 * phi) + ") \nCipher Text-> " + Cipher + "\nDecrypted Text-> " + plainAgain);
 
-    console.log("NOW WE TRY MULTIBLY:");
-    var newPlain = '';
-    for (var i = 0; i < plainAgain.length; i++) {
-        var num = parseInt(plainAgain[i].charCodeAt(0));
-        console.log("this is num before everything: ", num);
-        num += protocolList[i] * n;
-        console.log("This is num after multiply:", protocolList[i] * 21, num);
-        newPlain += String.fromCharCode(num);
-
-
-        // var char = parseInt(plainAgain[i].charCodeAt(0));
-        // // console.log(math.add(char,n)*1);
-        // // console.log(typeof n);
-        // var listChars = [];
-        // listChars.push(String.fromCharCode(char));
-        // for(var j = 0; j < 6; j++){
-        //     char = math.add(math.bignumber(char) , n);
-        //     // console.log("This :",char)
-        //     // listChars.push(char);
-        //     listChars.push(String.fromCharCode(char));
-        // }
-        // console.log(listChars);
-    }
-    console.log(newPlain);
+    alert("n: " + (n) + "\np: " + (p) + "\nq: " + (q) + "\nphi: " + (phi) + "\ne: " + (e) + "\nPublic Key: (" + (e) + "," + (n) + ")\nPrivate Key: (" + (d) + "," + (phi) + ")");
+    alert("This is Ciphertext:\n" + Cipher + "\n\nThis is Decrypted text:\n" + plainAgain);
+    console.log(plainAgain);
 }
