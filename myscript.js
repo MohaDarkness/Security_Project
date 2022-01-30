@@ -1,5 +1,7 @@
 var p, q, e, n, phi, d;
 
+
+// To check if (num) is prime number or not; returns either True or False.
 function isPrime(num) {
     for (let i = 2, s = num; i * i <= s; i++)
         if (num % BigInt(i) === 0) return false;
@@ -7,6 +9,7 @@ function isPrime(num) {
     return num > 1;
 }
 
+// Extended Euclidean Algorithm that returns [gcd, inverse].
 function egcd(a, b) {
     var Phi = b;
     if (a < b) [a, b] = [b, a];
@@ -20,6 +23,7 @@ function egcd(a, b) {
         [t, old_t] = [old_t - q * t, t];
     }
 
+    // If the inverse (old_t = d) is negative, take it's smallest positive coefficient.
     if (old_t < BigInt(0)) {
         while (old_t < BigInt(0)) {
             old_t += Phi;
@@ -28,6 +32,7 @@ function egcd(a, b) {
     return ([old_r, old_t]); // [GCD, Inv]
 }
 
+// returns x^y (Mod p) used for {m^e mod n, c^d mod n}.
 function powerMod(x, y, p) {
     // Initialize result
     let res = BigInt(1);
@@ -54,7 +59,7 @@ function powerMod(x, y, p) {
     return res;
 }
 
-
+// For p number in the form.
 function check1() {
     p = document.getElementById("pValue").value;
     console.log(p);
@@ -76,6 +81,7 @@ function check1() {
     }
 }
 
+// For q number in the form.
 function check2() {
     q = document.getElementById("qValue").value;
     q = BigInt(q);
@@ -97,6 +103,7 @@ function check2() {
     }
 }
 
+// Calculate n and phi.
 function calculateValues() {
     n = p * q;
     if (p == q)
@@ -109,10 +116,11 @@ function calculateValues() {
     console.log("This is n:", n);
     console.log("This is phi:", phi);
 }
-
+// For e number in the form.
 function check3() {
     e = document.getElementById("eValue").value;
     e = BigInt(e);
+    // e must be coefficient with phi, and it must be 1 < e < phi.
     if (egcd(e, phi)[0] == 1 && e * BigInt(1) > 1 && e * BigInt(1) < phi) {
         console.log(e);
         document.getElementById("plaintext").removeAttribute("readonly");
@@ -124,6 +132,7 @@ function check3() {
     }
 }
 
+// To calculate the inverse of e (d); where e*d Mod phi == 1.
 function calculateD(E, Phi) {
     console.log("This is E and Phi before the algo: ", E, Phi);
     d = egcd(e, phi)[1];
@@ -132,6 +141,8 @@ function calculateD(E, Phi) {
 
 var Plain, plainSplit, Cipher, cipherSplit, plainAgain, plainAgainSplit, protocolList = [];
 
+// For plaintext in the form; 1- Convert it to ascii code. 2- Add left 0 for values < 100 ('97' -> '097').
+// eg: 'Hello' -> ['H','e','l','l','o'] -> ['072','101','108','108','111']. 
 function takePlain() {
     Plain = document.getElementById("plaintext").value;
     console.log("This is the plaintext:", Plain);
@@ -146,6 +157,8 @@ function takePlain() {
     console.log("IN PROTOCOL!!");
     protocol();
 }
+
+// To know how many chars must be in a single block (depends on number of digits of n).
 var protocolNum;
 function protocol() {
 
@@ -168,6 +181,9 @@ function protocol() {
     prepare();
 }
 
+// To convert plaintext list to blocks and adding '000' for each missing character.
+// eg considering protocolNum = 2 (each 2 characters in one block):
+// ['072','101','108','108','111'] -> ['072101','108108','111000'].
 function prepare() {
     var tmpSplit = plainSplit;
     plainSplit = [];
@@ -192,6 +208,9 @@ function prepare() {
     }
     console.log("Plaintext converted to ascii blocks: ", plainSplit, typeof plainSplit[0]);
 
+    // We have problem if n < 127, which is m =c^d %(n=50), the values are in the range
+    // (0 -> 49), while the ascii of any char must be 32 < ascii < 127 which means there are gonna be
+    // Null values. 
     if (n < 127)
         protocolList1();
     else {
@@ -202,6 +221,8 @@ function prepare() {
     lowLevelEncryption();
 }
 
+// if n < 127 then we want to check how many n are in each ascii floor(ascii/n).
+// so when we decrypt the ciphertext we multiply each decrypted-ascii[i] * floor(plain-ascii/n).
 function protocolList1() {
     for (var i = 0; i < plainSplit.length; i++) {
         var div;
@@ -211,6 +232,8 @@ function protocolList1() {
     console.log("This is protocolList: ", protocolList);
 };
 
+// We use the formula C = M^e Mod n; where M is each ascii-block of the plaintext.\
+// Results cipherSplit which is cipher-ascii-blocks.
 function lowLevelEncryption() {
     var tmpNum;
     cipherSplit = [];
@@ -223,6 +246,8 @@ function lowLevelEncryption() {
     highLevelEncryption();
 }
 
+// Iterate in cipherSplit (cipher-ascii-blocks) to seperate the block into sigle chars-ascii, then
+// we convert each cipher-char-ascii into plain cipher-char (not numbers anymore).
 function highLevelEncryption() {
     Cipher = '';
     for (var i = 0; i < cipherSplit.length; i++) {
@@ -253,7 +278,8 @@ function highLevelEncryption() {
 }
 
 
-
+//We take the ciphertext block and do the formula M = C^d Mod n; where C is each block in cipherSplit.
+//Results plainAgainSplit that contains ascii blocks of the plaintext (decrypted text).
 function lowLevelDecrypt() {
     console.log("This is cipherSplit in lowleveldec:", cipherSplit);
     plainAgainSplit = [];
@@ -284,6 +310,8 @@ function lowLevelDecrypt() {
     highLevelDecryption()
 }
 
+//We iterate plainAgainSplit to seperate each block into sigle ascii-chars then convert these ascii-chars
+//into chars (Not numbers anymore).   
 function highLevelDecryption() {
     if (protocolNum != 1) {
         var tmpSplit = plainAgainSplit;
