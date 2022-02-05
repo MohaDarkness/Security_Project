@@ -156,6 +156,8 @@ function takePlain() {
     console.log("Plaintext converted to ascii array: ", plainSplit);
     console.log("IN PROTOCOL!!");
     protocol();
+   
+    alert("n: "+(n*1)+"\np: "+(p*1)+"\nq: "+(q*1)+"\nphi: "+(1*phi)+"\ne: "+(e*1)+ "\nPublic Key: ("+(e*1)+","+(n*1)+")\nPrivate Key: ("+(d*1)+","+(1*phi)+") \nCipher Text:"+Cipher);
 }
 
 // To know how many chars must be in a single block (depends on number of digits of n).
